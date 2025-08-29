@@ -1,0 +1,327 @@
+
+\newcommand{\OLD}[1]{\textcolor{red}{#1 \text{\,\,(!!!deprecated!!!)}}}
+\renewcommand{\tm}{\OLD{\origtm}}
+\renewcommand{\tmtwo}{\OLD{\origtmtwo}}
+\renewcommand{\tmthree}{\OLD{\origtmthree}}
+\renewcommand{\var}{\OLD{\origvar}}
+\renewcommand{\vartwo}{\OLD{\origvartwo}}
+\renewcommand{\varthree}{\OLD{\origvarthree}}
+\renewcommand{\lam}[2]{\OLD{\origlam{#1}{#2}}}
+\renewcommand{\judg}[3]{\OLD{\origjudg{#1}{#2}{#3}}}
+
+\subsection{Higher-Order Logic}
+
+We now extend the definitions of the previous sections
+to the setting of higher-order logic (HOL).
+We start by recalling the presentation of HOL that we shall use.
+There are many ways to formulate HOL as a formal system,
+\eg sometimes it is presented as a pure type system~\cite{Geuvers95}.
+The formalism we use is the $\lambdaHOPL$-calculus~\cite{Geuvers95},
+a two-layered $\lambda$-calculus that involves three sorts of expressions:
+types, terms, and proof-terms.
+Before proceeding, we remark that the notation for some metasyntactical variables
+slighly differs from that in the previous sections.
+In particular,
+we write $\tvar,\tvartwo,\hdots$ (instead of $\origvar,\origvartwo,\hdots$) for term variables,
+and $\ttm,\ttmtwo,\hdots$ (instead of $\origtm,\origtmtwo,\hdots$) for terms.
+The notations $\pvar,\pvartwo,\hdots$ and $\ptm,\ptmtwo,\hdots$
+are reserved for proof-term variables and proof-terms.
+The change in notation is intended to draw attention to the fact that proof-terms
+in this section play the same role as terms in the previous sections.
+
+\paragraph{Informal review of $\lambdaHOPL$.}
+The $\lambdaHOPL$-calculus is structured in two layers.
+First, the sort of \emph{types} ($\typ,\typtwo,\hdots$)
+is extended with a constant $\Prop$.
+In the first layer, the sort of \emph{terms} ($\ttm,\ttmtwo,\hdots$)
+corresponds to the set of expressions of a simply typed $\lambda$-calculus.
+Typing judgments in this first layer are of the form $\tjudg{\tenv}{\ttm}{\typ}$,
+where $\tenv$ is a type environment, mapping term variables to types.
+Terms of type $\Prop$ represent propositions.
+The grammar of terms includes two term constructors
+to form propositions,
+namely implication ($\ttm\imp\ttmtwo$)
+and universal quantification ($\all{\tvar}{\typ}{\ttm}$).
+As the name suggests, HOL generalizes such systems as
+(many-sorted) first and second-order logic.
+For instance,
+$\all{P}{\btyp\to\Prop}{\all{f}{\btyp\to\btyp}{\all{\tvar}{\btyp}{(P\,\tvar \imp P\,(f\,\tvar))}}}$
+is a proposition, where variables bound by universal quantifiers may
+play the role of predicate symbols (\eg~$P$) or function symbols (\eg~$f$).
+In the second layer,
+the sort of \emph{proof-terms} ($\ptm,\ptmtwo,\hdots$)
+is again the set of expressions of a simply typed $\lambda$-calculus.
+Proof-terms are typed with propositions,
+\ie from the point of view of the Curry--Howard paradigm,
+proof-terms encode derivations of sequents
+in a natural deduction system for HOL.
+Typing judgments of this second layer are of the form
+$\pjudg{\tenv}{\penv}{\ptm}{\ttm}$,
+which means that the proof-term $\ptm$
+encodes a proof of the proposition $\ttm$,
+under a type environment~$\tenv$
+and a under a \emph{proposition environment}~$\penv$,
+which maps proof-term variables to propositions.
+For example, $\palli{\tvar}{\Prop}{\plamt{\pvar}{\tvar}{\pvar}}$
+is a proof-term that encodes a proof of the proposition
+$\all{\tvar}{\Prop}{(\tvar\imp\tvar)}$.
+
+\paragraph{First layer -- terms.}
+Formally, \defn{types} are extended with a constant $\Prop$,
+that represents the type of propositions:
+\[
+  \typ,\typtwo,\hdots ::= \btyp \mid \Prop \mid \typ\to\typtwo
+\]
+We assume given a denumerable set of \defn{term variables} ($\tvar,\tvartwo,\hdots$).
+Besides variables, $\lambda$-abstractions, and applications,
+the grammar of \defn{terms} is extended with two constructors to form propositions:
+\[
+  \ttm, \ttmtwo, \hdots ::= \tvar
+                       \mid \tlam{\tvar}{\typ}{\ttm}
+                       \mid \ttm\,\ttmtwo
+                       \mid \ttm\imp\ttmtwo
+                       \mid \all{\tvar}{\typ}{\ttm}
+\]
+Note that term variables bound by abstractions are accompanied by their type.
+A \defn{type environment} ($\tenv,\tenvtwo,\hdots$)
+is a finite set of assignments
+$\tvar_1:\typ_1,\hdots,\tvar_n:\typ_n$, mapping distinct term variables to types.
+Judgments in the first layer are of the form $\tjudg{\tenv}{\ttm}{\typ}$,
+meaning that the term $\ttm$ is of type $\typ$ under the type environment $\tenv$.
+The usual typing rules for variables, $\lambda$-abstractions, and applications
+are extended with two further rules:
+\[
+  \indrule{\ruleTImp}{
+    \tjudg{\tenv}{\ttm}{\Prop}
+    \HS
+    \tjudg{\tenv}{\ttmtwo}{\Prop}
+  }{
+    \tjudg{\tenv}{\ttm\imp\ttmtwo}{\Prop}
+  }
+  \HS
+  \indrule{\ruleTAll}{
+    \tjudg{\tenv,\tvar:\typ}{\ttm}{\Prop}
+  }{
+    \tjudg{\tenv}{\all{\tvar}{\typ}{\ttm}}{\Prop}
+  }
+\]
+We define \defn{$\beta$-convertibility} as the least congruence
+$\ttm \eqbeta \ttmtwo$ over typable terms generated by the usual
+$\beta$-reduction rule:
+\[
+  (\tlam{\tvar}{\typ}{\ttm})\,\ttmtwo
+  \tobeta
+  \ttm\sub{\tvar}{\ttmtwo}
+\]
+where $\ttm\sub{\tvar}{\ttmtwo}$ denotes the result of the capture-avoiding
+substitution of the free occurrences of $\tvar$ in $\ttm$ by $\ttmtwo$.
+
+\paragraph{Second layer -- proof-terms.}
+We assume given a denumerable set of \defn{proof-term variables} ($\pvar,\pvartwo,\hdots$).
+The set of \defn{proof-terms} is given by the grammar:
+\[
+  \ptm,\ptmtwo,\hdots
+       ::= \pvar
+      \mid \plamt{\pvar}{\ttm}{\ptm}
+      \mid \ptm\,\ptmtwo
+      \mid \palli{\tvar}{\typ}{\ptm}
+      \mid \ptm\,\ttm
+\]
+From the logical point of view, $\plamt{\pvar}{\ttm}{\ptm}$ and $\ptm\,\ptmtwo$
+encode, respectively, introduction and elimination of the implication,
+while $\palli{\tvar}{\typ}{\ptm}$ and $\ptm\,\ttm$
+encode introduction and elimination of the universal quantifier.
+A \defn{proposition environment} ($\penv,\penvtwo,\hdots$) is a finite set of
+assignments $\pvar_1:\ttm_1,\hdots,\pvar_n:\ttm_n$ mapping proof-term variables
+to terms.
+We write $\fv{\penv}$ for the set of term variables that occur free in $\penv$.
+We introduce two forms of second-layer judgments,
+which depend on first-layer judgments
+as well as on each other (\ie they are mutually defined).
+The judgment $\pjudgenv{\tenv}{\penv}$ means that the proposition environment
+$\penv$ is well-formed under the type environment $\tenv$,
+\ie that it maps proof-term variables to terms that are actually
+propositions.
+The judgment $\pjudg{\tenv}{\penv}{\ptm}{\ttm}$
+means that the proof-term $\ptm$ is a proof of the proposition $\ttm$
+under the environments $\tenv$ and $\penv$.
+Valid judgments are defined inductively as follows:
+\[
+  \indrule{\rulePEnv}{
+    (\tjudg{\tenv}{\ttm_i}{\Prop})_{i=1}^{n}
+  }{
+    \pjudgenv{\tenv}{(\pvar_1:\ttm_1,\hdots,\pvar_n:\ttm_n)}
+  }
+  \HS
+  \indrule{\rulePAx}{
+    \pjudgenv{\tenv}{(\penv,\pvar:\ttm)}
+  }{
+    \pjudg{\tenv}{\penv,\pvar:\ttm}{\pvar}{\ttm}
+  }
+  \HS
+  \indrule{\rulePImpI}{
+    \pjudg{\tenv}{\penv,\pvar:\ttm}{\ptm}{\ttmtwo}
+  }{
+    \pjudg{\tenv}{\penv}{\plamt{\pvar}{\ttm}{\ptm}}{\ttm\imp\ttmtwo}
+  }
+\]
+\[
+  \indrule{\rulePImpE}{
+    \pjudg{\tenv}{\penv}{\ptm}{\ttm\imp\ttmtwo}
+    \HS
+    \pjudg{\tenv}{\penv}{\ptmtwo}{\ttm}
+  }{
+    \pjudg{\tenv}{\penv}{\ptm\,\ptmtwo}{\ttmtwo}
+  }
+  \HS
+  \indrule{\rulePAllI}{
+    \pjudg{\tenv,\tvar:\typ}{\penv}{\ptm}{\ttm}
+    \HS
+    \tvar\notin\fv{\penv}
+  }{
+    \pjudg{\tenv}{\penv}{\palli{\tvar}{\typ}{\ptm}}{\all{\tvar}{\typ}{\ttm}}
+  }
+\]
+\[
+  \indrule{\rulePAllE}{
+    \pjudg{\tenv}{\penv}{\ptm}{\all{\tvar}{\typ}{\ttm}}
+    \HS
+    \tjudg{\tenv}{\ttmtwo}{\typ}
+  }{
+    \pjudg{\tenv}{\penv}{\ptm\,\ttmtwo}{\ttm\sub{\tvar}{\ttmtwo}}
+  }
+  \HS
+  \indrule{\rulePConv}{
+    \pjudg{\tenv}{\penv}{\ptm}{\ttm}
+    \HS
+    \ttm \eqbeta \ttmtwo
+  }{
+    \pjudg{\tenv}{\penv}{\ptm}{\ttmtwo}
+  }
+\]
+The last rule is a conversion rule.
+
+Reduction is the binary relation ($\to$) defined over typable terms
+as the union of the two following rewriting rules,
+closed by arbitrary contexts:
+\[
+  \begin{array}{rcl}
+    (\plamt{\pvar}{\ttm}{\ptm})\,\ptmtwo
+    & \to &
+    \ptm\sub{\pvar}{\ptmtwo}
+  \\
+    (\palli{\tvar}{\typ}{\ptm})\,\ttm
+    & \to &
+    \ptm\sub{\tvar}{\ttm}
+  \end{array}
+\]
+where $\ptm\sub{\pvar}{\ptmtwo}$ and $\ptm\sub{\tvar}{\ttm}$
+are capture-avoiding substitutions.
+
+\subsection{The $\lambdaCheckHOPL$ calculus}
+
+The set of proof-terms of $\lambdaCheckHOPL$ is given by the grammar:
+\[
+  \begin{array}{lrll}
+    \utm,\utmtwo,\hdots
+  & ::=  & \pvar
+         & \text{variable}
+  \\
+  & \mid & \plam{\pvar}{\utm}
+         & \text{proof-term abstraction}
+  \\
+  & \mid & \utm\,\utmtwo
+         & \text{proof-term application}
+  \\
+  & \mid & \palli{\tvar}{\typ}{\utm}
+         & \text{term abstraction}
+  \\
+  & \mid & \utm\,\ttm
+         & \text{term application}
+  \\
+  & \mid & \iunit
+         & \text{unit constructor}
+  \\
+  & \mid & \eunit{\utm}{\utmtwo}
+         & \text{unit eliminator}
+  \\
+  & \mid & \gen{\ttm}
+         & \text{$\ttm$-generator}
+  \\
+  & \mid & \verif{\ttm}{\utm}
+         & \text{$\ttm$-verifier}
+  \\
+  & \mid & \fresh{\tvar}{\typ}{\utm}
+         & \text{introduction of a fresh term variable}
+  \end{array}
+\]
+
+\paragraph{Syntactical differences between $\lambdaCheckHOPL$ and $\lambdaCheck$.}
+The relation between $\lambdaCheckHOPL$ and $\lambdaHOPL$
+is similar to that of $\lambdaCheck$ and the simply typed $\lambda$-calculus.
+We mention some of the differences between $\lambdaCheckHOPL$ and $\lambdaCheck$.
+First,
+  $\lambdaCheckHOPL$
+  includes abstractions $\plam{\pvar}{\utm}$
+  and applications $\utm\,\utmtwo$
+  which abstract over $\lambdaCheckHOPL$ proof-terms.
+  These are similar to the corresponding terms in $\lambdaCheck$,
+  with the minor notational difference that abstractions are written
+  with the ``double lambda'' symbol.
+Second,
+  $\lambdaCheckHOPL$
+  also includes abstractions $\palli{\tvar}{\typ}{\utm}$
+  and applications $\utm\,\ttm$,
+  which abstract over terms.
+Third,
+  the syntax of $\lambdaCheck$
+  includes only generators and verifiers of the forms
+  $\gen{\btyp}$ and $\verif{\btyp}{\utm}$,
+  where $\btyp$ is an atomic \emph{type}.
+  In $\lambdaCheck$, generators and verifiers for more complex
+  types are defined at the meta-level
+  (\cf~\cref{def:generators_and_verifiers}).
+  On the other hand, $\lambdaCheckHOPL$
+  includes generators and verifiers for arbitrary terms $\ttm$
+  ($\gen{\ttm}$ and $\verif{\ttm}{\utm}$).
+  The intended meaning in this cases is that $\ttm$ is a proposition,
+  \ie a term of type $\Prop$.
+Fourth, 
+  $\lambdaCheckHOPL$ includes a constructor $\fresh{\tvar}{\typ}{\utm}$
+  that binds a fresh variable $\tvar$ of type $\typ$
+  in the scope of $\utm$.
+  This construct is needed in order to verify universal quantifiers.
+
+The $\lambdaCheck$ calculus presented in previous sections is completely untyped.
+In contrast,
+the $\lambdaCheckHOPL$ calculus treats
+the first layer (a term $\ttm$ being of a certain type $\typ$)
+differently than
+the second layer (a proof-term $\ptm$ being a proof for a certain proposition $\ttm$).
+
+The first layer is typed, in the sense that
+we impose an invariant requiring that proof-terms are \emph{well-formed}
+under a type context $\tenv$. Well-formedness requires in particular that
+all terms $\ttm$ occurring in a proof-term are typable, and that generators
+and verifiers only operate on \emph{propositions}.
+For example, the well-formedness invariant will allow writing a proof-term
+like $\fresh{\tvar}{\Prop}{\gen{\tvar}}$
+in which $\gen{\tvar}$ generates a proof for $\tvar$, which is a
+proposition (\ie a term of type $\Prop$).
+The same invariant will disallow writing a proof-term like
+$\fresh{\tvar}{\typ\to\Prop}{\gen{\tvar}}$,
+in which $\gen{\tvar}$ generates a proof of $\tvar$, which now is \textbf{not}
+a proposition.
+
+The second layer is untyped.
+For example, we will be able to work with proof-terms
+that do not represent proofs of propositions,
+such as $\pvar\,\pvar$.
+
+In consonance with these ideas,
+note that the (first-layer) term variable bound by a type abstraction
+$\palli{\tvar}{\typ}{\utm}$ carries a type annotation,
+whereas the (second-layer) proof-term variable $\pvar$ bound by an
+abstraction $\plam{\pvar}{\ptm}$ does not carry an annotation.
+
+\paragraph{Reduction in $\lambdaCheckHOPL$.}

@@ -1,0 +1,238 @@
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{bm}
+\usepackage{bbm}
+%\usepackage{hyperref}
+%\usepackage{wasysym}
+\usepackage{cleveref}
+
+%%%% Inductive rules %%%%
+\usepackage{mathpartir}
+\newcommand{\indrulename}[1]{\texttt{#1}}
+\newcommand{\indrule}[3]{\infer{#2}{#3}{#1}}
+%%%%
+
+%%%% Common abbreviations %%%%
+\renewcommand{\emptyset}{\varnothing}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\Natz}{\mathbb{N}_0}
+\newcommand{\NotNow}[1]{}
+\newcommand{\TODO}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\HS}{\hspace{.5cm}}
+\newcommand{\ST}{\ |\ }
+\newcommand{\ie}{{\em i.e.}\xspace}
+\newcommand{\eg}{{\em e.g.}\xspace}
+\newcommand{\cf}{{\em cf.}\xspace}
+\newcommand{\ih}{IH\xspace}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\eqdef}{\,\mathrel{:=}\,}
+\newcommand{\iffdef}{\,\mathrel{\overset{\mathrm{def}}{\iff}}\,}
+\newcommand{\eqih}{\,\mathrel{\overset{\mathrm{i.h}}{=}}\,}
+\newcommand{\eqby}[1]{\,=_{#1}\,}
+\newcommand{\sub}[2]{\{#1:=#2\}}
+\newcommand{\su}[1]{^{#1}}
+\newcommand{\fv}[1]{\mathsf{fv}(#1)}
+\newcommand{\vars}[1]{\mathsf{vars}(#1)}
+\newcommand{\dom}[1]{\mathsf{dom}(#1)}
+\newcommand{\defn}[1]{\emph{#1}}
+\newcommand{\ARG}{(\cdot)}
+%%%%
+
+%%%% Nested enumerations %%%%
+\renewcommand{\theenumi}{\arabic{enumi}}
+\renewcommand{\theenumii}{\arabic{enumii}}
+\renewcommand{\theenumiii}{\arabic{enumiii}}
+\renewcommand{\theenumiv}{\arabic{enumiv}}
+%%
+\renewcommand{\labelenumi}{\arabic{enumi}.}
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}}
+\renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}}
+\renewcommand{\labelenumiv}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.\arabic{enumiv}}
+%%
+\makeatletter
+\renewcommand\p@enumii{\theenumi.}
+\renewcommand\p@enumiii{\theenumi.\theenumii.}
+\renewcommand\p@enumiv{\theenumi.\theenumii.\theenumiii.}
+\makeatother
+%%%%
+
+%%%% Theorem environments %%%%
+\theoremstyle{definition}
+\newtheorem{dummythm}{dummythm}
+\newtheorem{lemma}[dummythm]{Lemma}
+\newtheorem{proposition}[dummythm]{Proposition}
+\newtheorem{theorem}[dummythm]{Theorem}
+\newtheorem{example}[dummythm]{Example}
+\newtheorem{corollary}[dummythm]{Corollary}
+\newtheorem{definition}[dummythm]{Definition}
+\newtheorem{remark}[dummythm]{Remark}
+%\numberwithin{dummythm}{section} 
+%%%%
+
+%%%% Terminology
+\newcommand{\lambdaHOPL}{{\lambda}_{\mathsf{HOPL}}}
+\newcommand{\lambdaCheck}{\lambda^\maltese}
+\newcommand{\lambdaCheckHOPL}{{\lambda^\maltese_\mathsf{HOPL}}}
+
+%%%% Syntax %%%%
+
+\newcommand{\origlam}[2]{\lambda #1.\,#2}
+\newcommand{\lam}[2]{\origlam{#1}{#2}}
+\newcommand{\lamt}[2]{\langle#1\rangle\blacktriangleright\,#2}
+
+%%%% Rewriting relations
+% \to % General reduction
+\newcommand{\tos}{\twoheadrightarrow}
+\newcommand{\symWeakHead}{w}
+\newcommand{\tow}{\to_{\symWeakHead}}   % Weak head reduction
+\newcommand{\tows}{\twoheadrightarrow_{\symWeakHead}}
+
+%%%% Symbols for rewriting rules
+\newcommand{\symBeta}{\beta}
+\newcommand{\symEIUnit}{\mathsf{u}}
+\newcommand{\symVerifGen}{\mathsf{v}}
+\newcommand{\toBeta}{\to_{\symBeta}}
+\newcommand{\toEIUnit}{\to_{\symEIUnit}}
+\newcommand{\toVerifGen}{\to_{\symVerifGen}}
+\newcommand{\axBeta}{\mapsto_{\symBeta}}
+\newcommand{\axEIUnit}{\mapsto_{\symEIUnit}}
+\newcommand{\axVerifGen}{\mapsto_{\symVerifGen}}
+
+%%%% Contexts
+\newcommand{\ctxhole}{\Box}
+\newcommand{\gctx}{\mathtt{C}}
+\newcommand{\wctx}{\mathtt{W}}
+\newcommand{\ctxof}[2]{#1[#2]}
+
+%%%% Generators and verifiers
+\newcommand{\gen}[1]{\maltese_{#1}}
+\newcommand{\verif}[2]{\langle#1\rangle#2}
+\newcommand{\genbtyp}[1][\btyp]{\gen{#1}}
+\newcommand{\verifbtyp}[2][\btyp]{\verif{#1}{#2}}
+
+%%%% Unit
+\newcommand{\iunit}{\star}
+\newcommand{\eunit}[2]{#1\rhd#2}
+
+%%%% Base types
+\newcommand{\btyp}{\alpha}
+\newcommand{\btyptwo}{\beta}
+\newcommand{\btypthree}{\gamma}
+
+%%%% Types
+\newcommand{\typ}{A}
+\newcommand{\typtwo}{B}
+\newcommand{\typthree}{C}
+
+%%%% Typing contexts
+\newcommand{\emptyctx}{\emptyset}
+\newcommand{\tenv}{\Gamma}
+\newcommand{\tenvtwo}{\tenv'}
+\newcommand{\typesize}[1]{\lVert#1\rVert}
+
+%%%% Term variables
+\newcommand{\origvar}{x}
+\newcommand{\origvartwo}{y}
+\newcommand{\origvarthree}{z}
+\newcommand{\var}{\origvar}
+\newcommand{\vartwo}{\origvartwo}
+\newcommand{\varthree}{\origvarthree}
+
+%%%% Untyped terms
+\newcommand{\utm}{M}
+\newcommand{\utmtwo}{N}
+\newcommand{\utmthree}{P}
+\newcommand{\utmfour}{Q}
+\newcommand{\utmfive}{R}
+\newcommand{\utmsix}{S}
+
+%%%% Typed terms
+\newcommand{\origtm}{t}
+\newcommand{\origtmtwo}{s}
+\newcommand{\origtmthree}{u}
+\newcommand{\tm}{\origtm}
+\newcommand{\tmtwo}{\origtmtwo}
+\newcommand{\tmthree}{\origtmthree}
+
+%%%% Typing judgments
+\newcommand{\origjudg}[3]{#1\vdash#2:#3}
+\newcommand{\judg}[3]{\origjudg{#1}{#2}{#3}}
+
+%%%% Substitutions
+\newcommand{\subs}[2]{#1^{#2}}
+\newcommand{\subst}{\sigma}
+\newcommand{\substtwo}{\tau}
+\newcommand{\compat}[2]{#1\vDash#2}
+\newcommand{\extsub}[2]{[#1\mapsto#2]}
+
+\newcommand{\size}[1]{\lvert#1\rvert}
+\newcommand{\sizeVar}[1]{\lvert#1\rvert_*}
+\newcommand{\meas}[1]{\mathfrak{m}(#1)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%% HOL %%%%
+
+%%%% Names of rules
+\newcommand{\ruleTAx}{\indrulename{Tax}}
+\newcommand{\ruleTToI}{\indrulename{T$\to_i$}}
+\newcommand{\ruleTToE}{\indrulename{T$\to_e$}}
+\newcommand{\ruleTImp}{\indrulename{T$\imp$}}
+\newcommand{\ruleTAll}{\indrulename{T$\forall$}}
+\newcommand{\rulePEnv}{\indrulename{PEnv}}
+\newcommand{\rulePAx}{\indrulename{PAx}}
+\newcommand{\rulePImpI}{\indrulename{P$\imp_i$}}
+\newcommand{\rulePImpE}{\indrulename{P$\imp_e$}}
+\newcommand{\rulePAllI}{\indrulename{P$\forall_i$}}
+\newcommand{\rulePAllE}{\indrulename{P$\forall_e$}}
+\newcommand{\rulePConv}{\indrulename{PConv}}
+
+%%%% Type constructors
+\newcommand{\Prop}{\mathsf{Prop}}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\all}[3]{\forall_{#1:#2}.\,#3}
+
+%%%% Term constructors
+\newcommand{\tlam}[3]{\lambda{#1^#2}.\,#3}
+
+%%%% Term variables
+\newcommand{\tvar}{a}
+\newcommand{\tvartwo}{b}
+\newcommand{\tvarthree}{c}
+
+%%%% Terms
+\newcommand{\ttm}{T}
+\newcommand{\ttmtwo}{S}
+\newcommand{\ttmthree}{U}
+
+%%%% Conversion
+\newcommand{\eqbeta}{\mathrel{=_\beta}}
+\newcommand{\tobeta}{\mathrel{\to_\beta}}
+
+%%%% Term judgments
+\newcommand{\tjudg}[3]{#1\vdash#2:#3}
+\newcommand{\pjudgenv}[2]{#1\vdash#2\,\texttt{env}}
+\newcommand{\pjudg}[4]{#1;#2\vdash#3:#4}
+
+%%%% Proof-term variables
+\newcommand{\pvar}{x}
+\newcommand{\pvartwo}{y}
+\newcommand{\pvarthree}{z}
+
+%%%% Proof-term constructors
+\newcommand{\plam}[2]{\lambda\!\!\lambda{#1}.\,#2}
+\newcommand{\plamt}[3]{\plam{#1^{#2}}{#3}}
+\newcommand{\palli}[3]{\Lambda{#1^{#2}}.\,#3}
+
+%%%% Checker
+\newcommand{\fresh}[3]{\nu{#1^{#2}}.\,#3}
+
+%%%% Proof-terms
+\newcommand{\ptm}{p}
+\newcommand{\ptmtwo}{q}
+
+%%%% Proposition environments
+\newcommand{\penv}{\Delta}
+\newcommand{\penvtwo}{\penv'}
+

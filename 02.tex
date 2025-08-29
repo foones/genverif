@@ -1,0 +1,1123 @@
+
+\begin{proposition}[Confluence]
+\label{prop:confluence}
+The $\lambdaCheck$-calculus is confluent.
+\end{proposition}
+\begin{proof}
+It suffices to note that the calculus can be encoded as an orthogonal HRS.
+\end{proof}
+
+\begin{proposition}[Weak head factorization]
+\label{prop:factorization}
+If $\utm \tos \iunit$ then $\utm \tows \iunit$.
+\end{proposition}
+\begin{proof}
+\TODO{Quizás se puede probar a través de un sistema de tipos o simplemente con técnicas de reescritura.}
+\end{proof}
+
+\begin{lemma}[Uniqueness of the weak head redex]
+\label{lem:uniqueness_of_weak_head_redex}
+If $\ctxof{\wctx_1}{\utm_1} = \ctxof{\wctx_2}{\utm_2}$
+where $\utm_1$ and $\utm_2$ are redexes, then
+$\wctx_1 = \wctx_2$ and $\utm_1 = \utm_2$.
+In particular, this entails determinism of weak head reduction,
+\ie if $\utmtwo \tow \utmtwo_1$ and $\utmtwo \tow \utmtwo_2$
+then $\utmtwo_1 = \utmtwo_2$.
+\end{lemma}
+\begin{proof}
+We proceed by induction on $\wctx_1$:
+\begin{enumerate}
+\item
+  $\wctx_1 = \ctxhole$: then $\utm_1 = \ctxof{\wctx_2}{\utm_2}$.
+  We claim that $\wctx_2 = \ctxhole$.
+  Indeed, if $\wctx_2 \neq \ctxhole$
+  then $\ctxof{\wctx_2}{\utm_2}$ does not contain a redex at the root,
+  as can be seen by case analysis on the shape of the weak head
+  context $\wctx_2$ and the redex $\utm_2$.
+  Hence $\wctx_1 = \wctx_2 = \ctxhole$ and $\utm_1 = \utm_2$.
+\item
+  $\wctx_1 = \wctx'_1\,\utmtwo$: note that $\wctx_2$ cannot be empty,
+  because this would imply that $\wctx_1$ is empty,
+  using a symmetrical argument as in the base case.
+  Hence $\wctx_1$ and $\wctx_2$ are both non-empty.
+  Since $\ctxof{\wctx_1}{\utm_1} = \ctxof{\wctx_2}{\utm_2}$ by hypothesis,
+  then $\wctx_2$ must be of the form $\wctx_2 = \wctx'_2\,\utmtwo$
+  and $\ctxof{\wctx'_1}{\utm_1} = \ctxof{\wctx'_2}{\utm_2}$.
+  By \ih, $\wctx'_1 = \wctx'_2$ and $\utm_1 = \utm_2$.
+  To conclude, note that
+  $\wctx_1 = \wctx'_1\,\utmtwo = \wctx'_2\,\utmtwo = \wctx_2$.
+\item
+  $\wctx_1 = \eunit{\wctx'_1}{\utmtwo}$:
+  similar to the previous case.
+\item
+  $\wctx_1 = \verifbtyp{\wctx'_1}$:
+  similar to the previous case.
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Splitting]
+\label{lem:splitting}
+The following are equivalent:
+\begin{enumerate}
+\item
+  $\ctxof{\wctx}{\eunit{\utm}{\utmtwo}} \tow^n \iunit$
+\item
+  There exist $n_1,n_2 \geq 0$ such that
+  $\utm \tow^{n_1} \iunit$
+  and $\ctxof{\wctx}{\utmtwo} \tow^{n_2} \iunit$
+  and $n = 1 + n_1 + n_2$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+($1 \implies 2$)
+  Suppose that $\ctxof{\wctx}{\eunit{\utm}{\utmtwo}} \tow^n \iunit$.
+  We proceed by induction on $n$.
+  The reduction cannot be empty, so $n > 0$, \ie $n = 1 + m$ for some $m \geq 0$,
+  and the reduction must be of the form
+  $\ctxof{\wctx}{\eunit{\utm}{\utmtwo}} \tow \utmthree \tow^m \iunit$.
+  We consider two subcases, depending on whether
+  the redex contracted in the first step is $\eunit{\utm}{\utmtwo}$
+  or internal to $\utm$:
+  \begin{enumerate}
+  \item
+    If the contracted redex is $\eunit{\utm}{\utmtwo}$,
+    then $\utm = \iunit$,
+    and the reduction is of the form
+    $\ctxof{\wctx}{\eunit{\iunit}{\utmtwo}}
+     \tow \ctxof{\wctx}{\utmtwo}
+     \tow^m \iunit$.
+    Hence $\utm = \iunit \tow^0 \iunit$
+    and $\ctxof{\wctx}{\utmtwo} \tow^m \iunit$,
+    and taking $n_1 := 0$ and $n_2 := m$ we have that
+    $n = 1 + m = 1 + n_1 + n_2$, as required.
+  \item
+    If the contracted redex is internal to $\utm$,
+    then the reduction is of the form
+    $\ctxof{\wctx}{\eunit{\utm}{\utmtwo}}
+     \tow \ctxof{\wctx}{\eunit{\utm'}{\utmtwo}}
+     \tow^m \iunit$
+    where $\utm \tow \utm'$.
+    By \ih there exist $m_1,m_2$
+    such that $\utm' \tow^{m_1} \iunit$
+    and $\ctxof{\wctx}{\utmtwo} \tow^{m_2} \iunit$
+    and $m = 1 + m_1 + m_2$.
+    Taking $n_1 := 1 + m_1$ and $n_2 := m_2$,
+    we have that
+    $\utm \tow \utm' \tows^{m_1} \iunit$
+    where $n = 1 + m = 2 + m_1 + m_2 = 1 + n_1 + n_2$.
+  \end{enumerate}
+($2 \implies 1$)
+  Suppose that $\utm \tow^{n_1} \iunit$ and $\ctxof{\wctx}{\utmtwo} \tow^{n_2} \iunit$.
+  Then we have that
+  $\ctxof{\wctx}{\eunit{\utm}{\utmtwo}}
+  \tow^{n_1} \ctxof{\wctx}{\eunit{\iunit}{\utmtwo}}
+  \tow \ctxof{\wctx}{\utmtwo}
+  \tow^{n_2} \iunit$
+  of length $n = 1 + n_1 + n_2$.
+\end{proof}
+
+\begin{definition}[Substitution]
+A \emph{substitution}, ranged over by $\subst,\substtwo,\hdots$,
+is a partial function mapping variables to (untyped) terms.
+If $\subst$ is a substitution, we write $\subst\extsub{\var}{\utm}$ for
+the extension of the substitution with the mapping $\var\mapsto\utm$, \ie:
+\[
+  (\subst\extsub{\var}{\utm})(\vartwo)
+  \eqdef
+  \begin{cases}
+    \utm            & \text{if $\vartwo = \var$} \\
+    \subst(\vartwo) & \text{otherwise}
+  \end{cases}
+\]
+If $\utm$ is an untyped term and $\subst$ is a substitution,
+we write $\subs{\utm}{\subst}$ for the term obtained by
+substituting each free variable in $\utm$ by the corresponding
+term in $\subst$, avoiding capture. More precisely:
+\[
+  \begin{array}{rcll}
+    \subs{\var}{\subst}
+  & \eqdef &
+    \begin{cases}
+      \subst(\var) & \text{if $\var \in \dom{\subst}$} \\
+      \var         & \text{otherwise}
+    \end{cases}
+  \\
+    \subs{(\lam{\var}{\utm})}{\subst}
+  & \eqdef &
+    \lam{\var}{\subs{\utm}}{\subst}
+    & \text{if $\var \notin \dom{\subst}$}
+  \\
+    \subs{(\utm\,\utmtwo)}{\subst}
+  & \eqdef &
+    \subs{\utm}{\subst}\,\subs{\utmtwo}{\subst}
+  \\
+    \subs{\iunit}{\subst}
+  & \eqdef &
+    \iunit
+  \\
+    \subs{(\eunit{\utm}{\utmtwo})}{\subst}
+  & \eqdef &
+    \eunit{\subs{\utm}{\subst}}{\subs{\utmtwo}{\subst}}
+  \\
+    \subs{\genbtyp}{\subst}
+  & \eqdef &
+    \genbtyp
+  \\
+    \subs{(\verifbtyp{\utm})}{\subst}
+  & \eqdef &
+    \verifbtyp{\subs{\utm}{\subst}}
+  \end{array}
+\]
+\end{definition}
+
+\begin{lemma}[Substitution commutes with redexes]
+\label{lem:subst_commute_redex}
+\label{lem:tow_deterministic}
+If $\utmfive \to \utmsix$ is a reduction step at the root,
+then $\subs{\utmfive}{\subst} \to \subs{\utmsix}{\subst}$
+is a reduction step at the root. 
+\end{lemma}
+\begin{proof}
+Straightforward, by case analysis on the possible shapes of the redex $\utmfive$.
+\end{proof}
+
+\begin{lemma}[Substitution commutes with weak head contexts]
+\label{lem:subst_commute_wctx}
+\quad
+\begin{enumerate}
+\item
+  If $\wctx$ is a weak head context,
+  then $\subs{\wctx}{\subst}$ is a weak head context. 
+\item
+  $\subs{\ctxof{\wctx}{\utm}}{\subst}
+  = \ctxof{\subs{\wctx}{\subst}}{\subs{\utm}{\subst}}$
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+Both items are straightforward by induction on $\wctx$.
+The key remark is that the hole of a weak head context does not lie
+inside an abstraction, so in the expression
+$\ctxof{\subs{\wctx}{\subst}}{\subs{\utm}{\subst}}$ there is no
+danger of variable capture.
+\end{proof}
+
+\begin{definition}[Generative substitution]
+Let $\tenv$ be a type environment and $\utm$ an untyped term.
+We write $\subs{\utm}{\tenv}$ to stand for $\subs{\utm}{\subst}$,
+where $\subst$ is the substitution such that
+$\subst(\var) = \gen{\typ}$ for all $\var \in \dom{\tenv}$,
+and $\subst(\var)$ is undefined for all $\var \notin \dom{\tenv}$.
+\end{definition}
+
+\begin{example}
+If $\tenv$ is the type environment $\var:\typ\to\typtwo,\vartwo:\typ$,
+then
+$\subs{(\var\,\vartwo)}{\tenv}
+= \gen{\typ\to\typtwo}\,\gen{\typ}
+= (\lam{\var}{\eunit{\verif{\typ}\var}{\gen{\typtwo}}})\,\gen{\typ}
+$.
+\end{example}
+
+\begin{definition}[Compatibility]
+Let $\tenv$ be a type environment and $\subst$ be a substitution.
+We say that $\tenv$ is \defn{compatible} with $\subst$,
+written $\compat{\tenv}{\subst}$,
+if for every $\var:\typ \in \tenv$ we have that $\var \in \dom{\subst}$
+and $\verif{\typ}{\subs{\var}{\subst}} \tos \iunit$.
+\end{definition}
+
+\begin{lemma}
+\label{lem:subst_weak_head_redex}
+If $\subs{\utm}{\tenv}$ is of the form $\ctxof{\wctx}{\utmfive}$,
+where $\utmfive$ is a redex, then exactly one of the following holds:
+\begin{enumerate}
+\item
+  There exist $\wctx_0,\utmfive_0$ such that
+  $\utm = \ctxof{\wctx_0}{\utmfive_0}$ 
+  where $\subs{\wctx_0}{\tenv} = \wctx$
+  and $\subs{\utmfive_0}{\tenv} = \utmfive$
+  and $\utmfive_0$ is a redex.
+\item
+  There exist $\wctx_0,\var,\utmtwo,\vartwo,\utmthree$ such that
+  $\utm = \ctxof{\wctx_0}{\var\,\utmtwo}$
+  where $\subs{\wctx_0}{\tenv} = \wctx$
+  and $\subs{\var}{\tenv} = \lam{\vartwo}{\utmthree}$.
+\item
+  There exist $\wctx_0,\var,\utmtwo$ such that
+  $\utm = \ctxof{\wctx_0}{\eunit{\var}{\utmtwo}}$
+  where $\subs{\wctx_0}{\tenv} = \wctx$
+  and $\subs{\var}{\tenv} = \iunit$.
+\item
+  There exist $\wctx_0,\var$ such that
+  $\utm = \ctxof{\wctx_0}{\verifbtyp{\var}}$
+  where $\subs{\wctx_0}{\tenv} = \wctx$
+  and $\subs{\var}{\tenv} = \genbtyp$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+\TODO{TODO}
+\end{proof}
+
+\begin{lemma}[Main lemma]
+\label{lem:main_lemma}
+Let $\compat{\tenv}{\subst}$.
+If $\subs{\utm}{\tenv} \tows \iunit$
+then $\subs{\utm}{\subst} \tows \iunit$.
+\end{lemma}
+\begin{proof}
+Suppose that $\compat{\tenv}{\subst}$
+and $\subs{\utm}{\tenv} \tows \iunit$.
+Let us write $\typesize{\typ}$ for the size of the type $\typ$,
+and $\typesize{\tenv}$ for the maximum size of a type occurring in $\tenv$,
+\ie $\typesize{\tenv} \eqdef \max\set{\typesize{\typ} \ST \exists \var.\, (\var:\typ \in \tenv)}$.
+We show that $\subs{\utm}{\subst} \tows \iunit$
+by induction on the lexicographic measure $(\typesize{\tenv}, n)$,
+where $n$ is the length of the reduction sequence $\subs{\utm}{\tenv} \tow^n \iunit$.
+We consider two cases, depending on whether this reduction sequence is empty or
+not, \ie $n = 0$ or $n > 0$.
+\begin{enumerate}
+\item
+  \textbf{Empty ($n = 0$).}
+  Then $\subs{\utm}{\tenv} = \iunit$.
+  We claim that $\utm = \iunit$.
+  Indeed, note that $\utm$ cannot be a variable, because if
+  $\utm = \var$ is a variable
+  then either $\var:\typ \in \tenv$
+  and $\subs{\utm}{\tenv} = \gen{\typ} \neq \iunit$,
+  or $\var \notin \dom{\tenv}$ and $\subs{\utm}{\tenv} = \var \neq \iunit$.
+  Moreover, if $\utm$ is not $\iunit$ nor a variable, then
+  $\subs{\utm}{\tenv} \neq \iunit$
+  (for example, if $\utm$ is an application then
+  $\subs{\utm}{\tenv}$ is also an application).
+  So we have that $\utm = \iunit$ and it is immediate to conclude that
+  $\subs{\utm}{\subst} = \iunit \tows \iunit$.
+\item
+  \textbf{Non-empty ($n = 1 + m$).}
+  Since the reduction sequence $\subs{\utm}{\tenv} \tow^n \iunit$ is non-empty,
+  $\subs{\utm}{\tenv}$ has a weak head redex.
+  By \cref{lem:subst_weak_head_redex} there are four cases:
+  either $\utm = \ctxof{\wctx}{\utmfive}$ where $\utmfive$ is a redex,
+  or $\utm = \ctxof{\wctx}{\var\,\utmtwo}$ where $\subs{\var}{\tenv}$ is an abstraction,
+  or $\utm = \ctxof{\wctx}{\eunit{\var}{\utmtwo}}$ where $\subs{\var}{\tenv} = \iunit$,
+  or $\utm = \ctxof{\wctx}{\verifbtyp{\var}}$ where $\subs{\var}{\tenv} = \genbtyp$.
+  We consider each of these four cases individually:
+  \begin{enumerate}
+  \item
+    If $\utm = \ctxof{\wctx}{\utmfive}$ where $\utmfive$ is a redex:
+    consider the root reduction step $\utmfive \tow \utmsix$.
+    First note that $\subs{\utmfive}{\tenv} \tow \subs{\utmsix}{\tenv}$
+    is also a root reduction step by \cref{lem:subst_commute_redex}.
+    Since head reduction is deterministic (\cref{lem:tow_deterministic}),
+    the input reduction sequence must be of the form:
+    \[
+      \begin{array}{rlll}
+        \subs{\utm}{\tenv}
+      & = &
+        \ctxof{\subs{\wctx}{\tenv}}{\subs{\utmfive}{\tenv}}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & \tow &
+        \ctxof{\subs{\wctx}{\tenv}}{\subs{\utmsix}{\tenv}}
+        & \text{by \cref{lem:subst_commute_wctx}, using that $\subs{\utmfive}{\tenv} \tow \subs{\utmsix}{\tenv}$}
+      \\
+      & \tow^m &
+        \iunit
+      \end{array}
+    \]
+    The reduction sequence
+    $\ctxof{\subs{\wctx}{\tenv}}{\subs{\utmsix}{\tenv}} \tow^m \iunit$
+    is shorter than the original one ($m < n$).
+    We may apply the \ih, using the same type environment $\tenv$,
+    in such a way that the lexicographic measure decreases:
+    $(\typesize{\tenv},n) > (\typesize{\tenv},m)$.
+    By \ih we have that
+    $\ctxof{\subs{\wctx}{\subst}}{\subs{\utmsix}{\subst}} \tows \iunit$.
+    To conclude, note that
+    $\subs{\utmfive}{\subst} \tow \subs{\utmsix}{\subst}$
+    is a root reduction step by \cref{lem:subst_commute_redex},
+    so:
+    \[
+      \begin{array}{rlll}
+        \subs{\utm}{\subst}
+      & = &
+        \ctxof{\subs{\wctx}{\subst}}{\subs{\utmfive}{\subst}}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & \tow &
+        \ctxof{\subs{\wctx}{\subst}}{\subs{\utmsix}{\subst}}
+        & \text{by \cref{lem:subst_commute_wctx}, using that $\subs{\utmfive}{\subst} \tow \subs{\utmsix}{\subst}$}
+      \\
+      & \tows &
+        \iunit
+        & \text{as obtained from the \ih}
+      \end{array}
+    \]
+  \item
+    If $\utm = \ctxof{\wctx}{\var\,\utmtwo}$
+    where $\subs{\var}{\tenv}$ is an abstraction,
+    \ie $\subs{\var}{\tenv} = \lam{\vartwo}{\utmthree}$.
+
+    First, we claim that $\var : \typ\to\typtwo \in \tenv$
+    for certain types $\typ,\typtwo$.
+    Indeed, if $\var \notin \dom{\tenv}$ then $\subs{\var}{\tenv} = \var$
+    is not an abstraction; so we must have that $\var \in \dom{\tenv}$.
+    Moreover if $\var : \btyp \in \tenv$, \ie if its type is an atomic type,
+    then $\subs{\var}{\tenv} = \genbtyp$ is not an abstraction;
+    so we must have that $\var$ occurs in $\tenv$ with a type which is not atomic.
+    Thus $\var$ must occur in $\tenv$ with an arrow type.
+
+    Then the input reduction sequence must be of the form:
+    \[
+      \begin{array}{rlll}
+        \subs{\utm}{\tenv}
+      & = &
+        \subs{\ctxof{\wctx}{\var\,\utmtwo}}{\tenv}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\tenv}}{\subs{\var}{\tenv}\,\subs{\utmtwo}{\tenv}}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\tenv}}{\gen{\typ\to\typtwo}\,\subs{\utmtwo}{\tenv}}
+        & \text{since $\var:\typ\to\typtwo \in \tenv$}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\tenv}}{(\lam{\var}{\eunit{\verif{\typ}{\var}}{\gen{\typtwo}}})\,\subs{\utmtwo}{\tenv}}
+        & \text{by definition of $\gen{\typ\to\typtwo}$}
+      \\
+      & \tow &
+        \ctxof{\subs{\wctx}{\tenv}}{\eunit{\verif{\typ}{\subs{\utmtwo}{\tenv}}}{\gen{\typtwo}}}
+        & \text{by $\symBeta$-reduction}
+      \\
+      & \tow^m &
+        \iunit
+      \end{array}
+    \]
+    Consider the tail of the reduction sequence:
+    $\ctxof{\subs{\wctx}{\tenv}}{\eunit{\verif{\typ}{\subs{\utmtwo}{\tenv}}}{\gen{\typtwo}}}
+     \tow^m \iunit$.
+    By \cref{lem:splitting}, there exist $m_1,m_2 \geq 0$ such that
+    $\verif{\typ}{\subs{\utmtwo}{\tenv}} \tow^{m_1} \iunit$
+    and
+    $\ctxof{\subs{\wctx}{\tenv}}{\gen{\typtwo}} \tow^{m_2} \iunit$
+    and $m = 1 + m_1 + m_2$.
+
+    Since $\compat{\tenv}{\subst}$ by hypothesis
+    and $\var : \typ\to\typtwo \in \tenv$,
+    we know that $\verif{\typ\to\typtwo}{\subs{\var}{\subst}} \tos \iunit$.
+    By definition of $\verif{\typ\to\typtwo}{\ARG}$, we have:
+    \[
+      \verif{\typtwo}{(\subs{\var}{\subst}\,\gen{\typ})}
+      = \verif{\typ\to\typtwo}{\subs{\var}{\subst}}
+      \tos \iunit
+    \]
+
+    Let $\vartwo$ be a fresh variable, and consider
+    the term $\ctxof{\wctx}{\vartwo}$,
+    the type environment $\tenv_1 := \tenv\cup\set{\vartwo:\typtwo}$,
+    and the substitution $\subst_1 := \subst\extsub{\vartwo}{\subs{\var}{\subst}\,\gen{\typ}}$.
+    Note that $\compat{\tenv_1}{\subst_1}$
+    because for $\vartwo:\typtwo\in\tenv_1$
+    we have that
+    $\verif{\typtwo}{(\vartwo^{\subst_1})}
+    = \verif{\typtwo}{(\var^{\subst}\,\gen{\typ})}
+    \tows \iunit$,
+    and for any variable other than $\vartwo$ the property
+    follows from the fact that $\compat{\tenv}{\subst}$.
+    Recall that $\var:\typ\to\typtwo \in \tenv$
+    so $\typesize{\tenv} \geq \typesize{\typ\to\typtwo} > \typesize{\typtwo}$,
+    which means that
+    $\typesize{\tenv_1}
+     = \typesize{\tenv,\vartwo:\typtwo}
+     = \max\set{\typesize{\tenv},\typesize{\typtwo}}
+     = \typesize{\tenv}$.
+    Also, note that:
+    \[
+      \begin{array}{rlll}
+        \subs{\ctxof{\wctx}{\vartwo}}{\tenv_1}
+      & = &
+        \ctxof{\subs{\wctx}{\tenv_1}}{\subs{\vartwo}{\tenv_1}}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\tenv}}{\subs{\vartwo}{\tenv_1}}
+        & \text{since $\vartwo$ is fresh for $\wctx$}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\tenv}}{\gen{\typtwo}}
+        & \text{by definition of $\subs{\vartwo}{\tenv_1}$}
+      \\
+      & \tow^{m_2} &
+        \iunit
+        & \text{as already shown}
+      \end{array}
+    \]
+    Furthermore, note that the lexicographic measure decreases:
+    $(\typesize{\tenv},n)
+     = (\typesize{\tenv_1},n)
+     > (\typesize{\tenv_1},m_2)$,
+    so we may apply the \ih to obtain that
+    $\subs{\ctxof{\wctx}{\vartwo}}{\subst_1} \tows \iunit$.
+    Hence:
+    \[
+      \begin{array}{rlll}
+        \ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\gen{\typ}}
+      & = &
+        \ctxof{\subs{\wctx}{\subst}}{\subs{\vartwo}{\subst_1}}
+        & \text{by definition of $\subs{\vartwo}{\subst_1}$}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\subst_1}}{\subs{\vartwo}{\subst_1}}
+        & \text{since $\vartwo$ is fresh for $\wctx$}
+      \\
+      & = &
+        \subs{\ctxof{\wctx}{\vartwo}}{\subst_1}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & \tows &
+        \iunit
+        & \text{as just shown}
+      \end{array}
+    \]
+
+    Recall that we have $\verif{\typ}{\subs{\utmtwo}{\tenv}} \tow^{n_1} \iunit$.
+    Taking the environment $\tenv$ and the substitution $\subst$,
+    we can note that the lexicographic measure decreases:
+    $(\typesize{\tenv},n) > (\typesize{\tenv_1},m_1)$,
+    so may apply the \ih to obtain that
+    $\verif{\typ}{\subs{\utmtwo}{\subst}} \tows \iunit$.
+    Now let $\varthree$ be a fresh variable, and consider
+    the term $\ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\varthree}$,
+    the type environment $\tenv_2 := \set{\varthree:\typ}$,
+    and the substitution $\subst_2 := \extsub{\varthree}{\subs{\utmtwo}{\subst}}$.
+    Note that $\compat{\tenv_2}{\subst_2}$
+    because $\verif{\typ}{\subs{\utmtwo}{\subst}} \tows \iunit$, as we have
+    just proved.
+    Moreover, we have that:
+    \[
+      \begin{array}{rlll}
+        \subs{\ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\varthree}}{\tenv_2}
+      & = &
+        \ctxof{\subs{(\subs{\wctx}{\subst})}{\tenv_2}}{\subs{(\subs{\var}{\subst})}{\tenv_2}\,\subs{\varthree}{\tenv_2}}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\subs{\varthree}{\tenv_2}}
+        & \text{since $\varthree$ is fresh for $\wctx,\var,\subst$}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\gen{\typ}}
+        & \text{since $\varthree : \typ \in \tenv_2$}
+      \\
+      & \tows &
+        \iunit
+        & \text{as already shown}
+      \end{array}
+    \]
+    Let the length of this reduction sequence be called $n'$.
+    Note that the lexicographic measure decreases:
+    $(\typesize{\tenv},n) > (\typesize{\tenv_2},n')$
+    because the first component decreases, \ie
+    $\typesize{\tenv}
+     \geq \typesize{\typ\to\typtwo}
+     > \typesize{\typ}
+     = \typesize{\tenv_2}$,
+    so we may apply the \ih to conclude that
+    $\subs{\ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\varthree}}{\subst_2}
+     \tows \iunit$.
+    Finally, note that:
+    \[
+      \begin{array}{rlll}
+        \subs{\utm}{\subst}
+      & = &
+        \subs{\ctxof{\wctx}{\var\,\utmtwo}}{\subst}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\subs{\utmtwo}{\subst}}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\subs{\varthree}{\subst_2}}
+        & \text{by definition of $\subst_2$}
+      \\
+      & = &
+        \ctxof{\subs{(\subs{\wctx}{\subst})}{\subst_2}}{\subs{(\subs{\var}{\subst})}{\subst_2}\,\subs{\varthree}{\subst_2}}
+        & \text{since $\varthree$ is fresh for $\wctx,\var,\subst$}
+      \\
+      & = &
+        \subs{\ctxof{\subs{\wctx}{\subst}}{\subs{\var}{\subst}\,\varthree}}{\subst_2}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & \tows &
+        \iunit
+        & \text{as just shown}
+      \end{array}
+    \]
+  \item
+    If $\utm = \ctxof{\wctx}{\eunit{\var}{\utmtwo}}$
+    where $\subs{\var}{\tenv} = \iunit$:
+    we claim that this case is impossible. 
+    Indeed, since $\subs{\var}{\tenv} = \iunit$,
+    we know that $\var \in \dom{\tenv}$,
+    but if $\var : \typ \in \dom{\tenv}$
+    then $\subs{\var}{\tenv} = \gen{\typ} \neq \iunit$,
+    contradicting the fact that $\subs{\var}{\tenv} = \iunit$.
+  \item
+    If $\utm = \ctxof{\wctx}{\verifbtyp{\var}}$
+    where $\subs{\var}{\tenv} = \genbtyp$:
+    then it must be the case that $\var : \btyp \in \tenv$.
+    Since head reduction is deterministic (\cref{lem:tow_deterministic}),
+    the input reduction sequence must be of the form:
+    \[
+      \begin{array}{rlll}
+        \subs{\utm}{\tenv}
+      & = &
+        \subs{\ctxof{\wctx}{\verifbtyp{\var}}}{\tenv}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\tenv}}{\verifbtyp{\subs{\var}{\tenv}}}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\tenv}}{\verifbtyp{\genbtyp}}
+        & \text{since $\var : \btyp \in \tenv$}
+      \\
+      & \tow &
+        \ctxof{\subs{\wctx}{\tenv}}{\iunit}
+        & \text{by $\symVerifGen$-reduction}
+      \\
+      & = &
+        \subs{\ctxof{\wctx}{\iunit}}{\tenv}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & \tow^m &
+        \iunit
+      \end{array}
+    \]
+    Note that the lexicographic measure decreases:
+    $(\typesize{\tenv},n) > (\typesize{\tenv},m)$,
+    so by \ih we have that
+    $\subs{\ctxof{\wctx}{\iunit}}{\subst} \tows \iunit$.
+    Hence:
+    \[
+      \begin{array}{rlll}
+        \subs{\utm}{\subst}
+      & = &
+        \subs{\ctxof{\wctx}{\verifbtyp{\var}}}{\subst}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\subst}}{\verifbtyp{\subs{\var}{\subst}}}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & = &
+        \ctxof{\subs{\wctx}{\subst}}{\iunit}
+        & \text{because $\verifbtyp{\subs{\var}{\subst}} \tows \iunit$ by $\compat{\tenv}{\subst}$}
+      \\
+      & = &
+        \subs{\ctxof{\wctx}{\iunit}}{\subst}
+        & \text{by \cref{lem:subst_commute_wctx}}
+      \\
+      & \tows &
+        \iunit
+        & \text{as just shown}
+      \end{array}
+    \]
+  \end{enumerate}
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}[Adequacy]
+\label{lem:adequacy}
+Let $\compat{\tenv}{\subst}$.
+If $\subs{\utm}{\tenv} \tos \iunit$
+then $\subs{\utm}{\subst} \tos \iunit$.
+\end{lemma}
+\begin{proof}
+Suppose that $\compat{\tenv}{\subst}$ and $\subs{\utm}{\tenv} \tos \iunit$.
+By \cref{prop:factorization}, we have that $\subs{\utm}{\tenv} \tows \iunit$,
+so it suffices to apply \cref{lem:main_lemma}.
+\end{proof}
+
+\begin{lemma}[Generate/verify]
+\label{lem:generate_verify}
+$\verif{\typ}{\gen{\typ}} \tos \iunit$
+\end{lemma}
+\begin{proof}
+By induction on $\typ$:
+\begin{enumerate}
+\item $\typ = \btyp$:
+  Then
+  $\verif{\typ}{\gen{\typ}}
+  = \verifbtyp{\genbtyp}
+  \to \iunit$ by rule $\symVerifGen$.
+\item $\typ = \typtwo \to \typthree$:
+  Then:
+  \[
+    \begin{array}{rlll}
+      \verif{\typ}{\gen{\typ}}
+    & = &
+      \verif{\typtwo\to\typthree}{\gen{\typtwo\to\typthree}}
+    \\
+    & = &
+      \verif{\typthree}{(\gen{\typtwo\to\typthree}\,\gen{\typtwo})}
+    \\
+    & = &
+      \verif{\typthree}{((\lam{\var}{\eunit{\verif{\typtwo}{\var}}{\gen{\typthree}}})\,\gen{\typtwo})}
+    \\
+    & \to &
+      \verif{\typthree}{(\eunit{\verif{\typtwo}{\gen{\typtwo}}}{\gen{\typthree}})}
+    \\
+    & \tos &
+      \verif{\typthree}{(\eunit{\iunit}{\gen{\typthree}})}
+      & \text{by \ih}
+    \\
+    & \to &
+      \verif{\typthree}{\gen{\typthree}}
+    \\
+    & \tos &
+      \iunit
+      & \text{by \ih}
+    \end{array}
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Soundness]
+If $\judg{\tenv}{\tm}{\typ}$ is derivable,
+then $\verif{\typ}{\subs{\tm}{\tenv}} \tos \iunit$.
+\end{theorem}
+\begin{proof}
+We proceed by induction on the derivation of the judgment $\judg{\tenv}{\tm}{\typ}$.
+\begin{enumerate}
+\item
+  Variable, $\tm = \var$:
+  then $\judg{\tenv}{\var}{\typ}$ holds, where $\var:\typ\in\tenv$.
+  Then
+  $\verif{\typ}{\subs{\tm}{\tenv}}
+  = \verif{\typ}{\subs{\var}{\tenv}}
+  = \verif{\typ}{\gen{\typ}}
+  \tos \iunit$
+  by \cref{lem:generate_verify}.
+\item
+  Abstraction, $\tm = \lam{\var}{\tmtwo}$:
+  then we have that $\typ = \typtwo\to\typthree$,
+  and $\judg{\tenv}{\lam{\var}{\tmtwo}}{\typtwo\to\typthree}$
+  is derived from $\judg{\tenv,\var:\typtwo}{\tmtwo}{\typthree}$.
+  By $\alpha$-conversion, we may assume that $\var \notin \dom{\tenv}$.
+  Then:
+  \[
+    \begin{array}{rlll}
+      \verif{\typtwo\to\typthree}{\subs{(\lam{\var}{\tmtwo})}{\tenv}}
+    & = &
+      \verif{\typtwo\to\typthree}{\lam{\var}{\subs{\tmtwo}{\tenv}}}
+    \\
+    & = &
+      \verif{\typthree}{((\lam{\var}{\subs{\tmtwo}{\tenv}})\,\gen{\typtwo})}
+    \\
+    & \to &
+      \verif{\typthree}{(\subs{\tmtwo}{\tenv}\sub{\var}{\gen{\typtwo}})}
+    \\
+    & = &
+      \verif{\typthree}{\subs{\tmtwo}{\tenv,\var:\typtwo}}
+    \\
+    & \tos &
+      \iunit
+      & \text{by \ih}
+    \end{array}
+  \]
+\item
+  Application, $\tm = \tmtwo\,\tmthree$:
+  then $\judg{\tenv}{\tmtwo\,\tmthree}{\typ}$
+  is derived from $\judg{\tenv}{\tmtwo}{\typtwo\to\typ}$
+  and $\judg{\tenv}{\tmthree}{\typtwo}$.
+  By \ih on the first premise, we have that
+  $\verif{\typtwo\to\typ}{\subs{\tmtwo}{\tenv}} \tos \iunit$,
+  which by definition of $\verif{\typtwo\to\typ}{\ARG}$
+  means that
+  $\verif{\typ}{(\subs{\tmtwo}{\tenv}\,\gen{\typtwo})} \tos \iunit$.
+  By \ih on the second premise, we have that
+  $\verif{\typtwo}{\subs{\tmthree}{\tenv}} \tos \iunit$.
+  Let $\vartwo$ be a fresh variable,
+  consider the term
+  $\verif{\typ}{(\subs{\tmtwo}{\tenv}\,\vartwo)}$,
+  the typing context $\tenvtwo := \set{\vartwo:\typtwo}$,
+  and the substitution $\subst := \set{\vartwo \mapsto \subs{\tmthree}{\tenv}}$.
+  Remark that
+  $\compat{\tenvtwo}{\subst}$
+  so by adequacy (\ref{lem:adequacy})
+  we have that the following implication holds:
+  \[
+    \subs{(\verif{\typ}{(\subs{\tmtwo}{\tenv}\,\vartwo)})}{\tenvtwo} \tos \iunit
+    \HS\text{ implies }\HS
+    \subs{(\verif{\typ}{(\subs{\tmtwo}{\tenv}\,\vartwo)})}{\subst} \tos \iunit
+  \]
+  Performing the substitutions, this means that:
+  \[
+    \verif{\typ}{(\subs{\tmtwo}{\tenv}\,\gen{\typtwo})} \tos \iunit
+    \HS\text{ implies }\HS
+    \verif{\typ}{(\subs{\tmtwo}{\tenv}\,\subs{\tmthree}{\tenv})} \tos \iunit
+  \]
+  The antecedent has already been shown to hold,
+  so
+  $\verif{\typ}{\subs{\tm}{\tenv}}
+   = \verif{\typ}{(\subs{\tmtwo}{\tenv}\,\subs{\tmthree}{\tenv})}
+   \tos \iunit$,
+  as required.
+\end{enumerate}
+\end{proof}
+
+\begin{definition}[Size of a term]
+Let $\size{\utm}$ denote the size of the term $\utm$.
+Let and let $\sizeVar{\utm}$ be defined as the size of $\utm$
+but possibly ignoring variable arguments:
+\[
+  \sizeVar{\utm} =
+    \begin{cases}
+      \sizeVar{\utm'} & \text{if $\utm = \utm'\,\var$} \\
+      \size{\utm}     & \text{otherwise}
+    \end{cases}
+\]
+Moreover, the \defn{measure} of a term $\utm$ is written
+$\meas{\utm}$ and defined as the pair $(\sizeVar{\utm},\size{\utm})$,
+with the lexicographic order. 
+\end{definition}
+
+\begin{remark}
+$\size{\utm} \geq \sizeVar{\utm}$
+\end{remark}
+
+For example,
+$\sizeVar{(\lam{\var}{\utm})\,\var\,\vartwo\,\varthree} = \size{\lam{\var}{\utm}}$.
+
+\begin{lemma}
+\label{lemma:sizeVar_normalize}
+\quad
+\begin{enumerate}
+\item
+  If $\utm$ is in normal form
+  then $\utm\,\var$ reduces to a normal form $\utmtwo$
+  in at most one step,
+  and moreover $\sizeVar{\utm} \geq \sizeVar{\utmtwo}$
+  and $\size{\utm} \geq \size{\utmtwo}$.
+\item
+  If $\utm$ is in normal form
+  then $\utm\,\var_1\hdots\var_n$ reduces to a normal form $\utmtwo$
+  in at most $n$ steps,
+  and moreover $\sizeVar{\utm} \geq \sizeVar{\utmtwo}$
+  and $\size{\utm} \geq \size{\utmtwo}$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+The second item is an easy consequence of the first one.
+To show the first item,
+we consider two cases, depending on whether $\utm$ has a redex at the root:
+\begin{enumerate}
+\item
+  If $\utm\,\var$ has a redex at the root,
+  then $\utm = \lam{\vartwo}{\utmtwo}$.
+  There is a one-step reduction
+  $\utm\,\var
+  = (\lam{\vartwo}{\utmtwo)}\,\var
+  \to \utmtwo\sub{\var}{\vartwo}$,
+  where $\utmtwo\sub{\var}{\vartwo}$ is in normal form
+  and
+  $\sizeVar{\utm}
+  = \sizeVar{\lam{\var}{\utmtwo}}
+  = \size{\lam{\var}{\utmtwo}}
+  > \size{\utmtwo}
+  = \size{\utmtwo\sub{\var}{\vartwo}}
+  \geq \sizeVar{\utmtwo\sub{\var}{\vartwo}}$.
+\item
+  If $\utm\,\var$ does not have a redex at the root,
+  then $\utmtwo := \utm\,\var$ is already in normal form
+  and $\sizeVar{\utm} = \sizeVar{\utm\,\var} = \sizeVar{\utmtwo}$.
+\end{enumerate}
+\end{proof}
+
+\begin{lemma}
+\label{lemma:sizeVar_neutral}
+Let $\var\utm_1\hdots\utm_n$ be a term headed by a variable.
+The for all $1 \leq i \leq n$
+we have that $\meas{\var\utm_1\hdots\utm_n} > \meas{\utm_i}$.
+\end{lemma}
+\begin{proof}
+By induction on $n$.
+If $n = 0$, the property is vacuously true.
+Assume the property holds for $n$ and let us check that the property holds
+for $n + 1$. We consider two cases, depending on whether $\utm_{n+1}$ is
+a variable:
+\begin{enumerate}
+\item
+  If $\utm_{n+1}$ is a variable,
+  then:
+  \begin{enumerate}
+  \item
+    If $1 \leq i \leq n$, then:
+    \[
+      \begin{array}{rcll}
+      &&
+        \meas{\var\utm_1\hdots\utm_{n+1}}
+      \\
+      & = &
+        (\sizeVar{\var\utm_1\hdots\utm_{n+1}}, \size{\var\utm_1\hdots\utm_{n+1}})
+      \\
+      & = &
+        (\sizeVar{\var\utm_1\hdots\utm_{n}}, \size{\var\utm_1\hdots\utm_{n+1}})
+        & \text{as $\utm_{n+1}$ is a variable}
+      \\
+      & > &
+        (\sizeVar{\var\utm_1\hdots\utm_{n}}, \size{\var\utm_1\hdots\utm_{n}})
+      \\
+      & = &
+        \meas{\var\utm_1\hdots\utm_{n}}
+      \\
+      & > &
+        \meas{\utm_i}
+        & \text{by \ih}
+      \end{array}
+    \]
+  \item
+    If $i = n + 1$, then:
+    \[
+      \begin{array}{rcll}
+      &&
+        \meas{\var\utm_1\hdots\utm_{n+1}}
+      \\
+      & = &
+        (\sizeVar{\var\utm_1\hdots\utm_{n+1}}, \size{\var\utm_1\hdots\utm_{n+1}})
+      \\
+      & \geq &
+        (1, \size{\var\utm_1\hdots\utm_{n+1}})
+        & \text{as $\sizeVar{\var\utm_1\hdots\utm_{n+1}} \geq 1$}
+      \\
+      & > &
+        (1, 1)
+        & \text{as $n > 0$ so $\size{\var\utm_1\hdots\utm_{n+1}} > 1$}
+      \\
+      & = &
+        (\sizeVar{\utm_{n+1}}, \size{\utm_{n+1}})
+        & \text{as $\utm_{n+1}$ is a variable}
+      \\
+      & = &
+        \meas{\utm_{n+1}}
+      \end{array}
+    \]
+  \end{enumerate}
+\item
+  If $\utm_{n+1}$ is not a variable
+  and $1 \leq i \leq n + 1$, then:
+  \[
+    \begin{array}{rcll}
+    &&
+      \meas{\var\utm_1\hdots\utm_{n+1}}
+    \\
+    & = &
+      (\sizeVar{\var\utm_1\hdots\utm_{n+1}}, \size{\var\utm_1\hdots\utm_{n+1}})
+    \\
+    & = &
+      (\size{\var\utm_1\hdots\utm_{n+1}}, \size{\var\utm_1\hdots\utm_{n+1}})
+      & \text{as $\utm_{n+1}$ is not a variable}
+    \\
+    & > &
+      (\size{\utm_i}, \size{\utm_i})
+      & \text{as $\size{\var\utm_1\hdots\utm_{n+1}} > \size{\utm_i}$}
+    \\
+    & \geq &
+      (\sizeVar{\utm_i}, \size{\utm_i})
+    \\
+    & = &
+      \meas{\utm_i}
+    \end{array}
+  \]
+\end{enumerate}
+\end{proof}
+
+\begin{theorem}[Completeness]
+\label{thm:completeness}
+If $\verif{\typ}{\subs{\utm}{\tenv}} \tos \iunit$
+and $\utm$ is a pure term that reduces to a normal form,
+then there exists a term $\tm$ such that $\judg{\tenv}{\tm}{\typ}$.
+\end{theorem}
+\begin{proof}
+Let $\utm^\downarrow$ be the normal form of $\utm$.
+We proceed by induction on $\meas{\utm^\downarrow}$.
+Without loss of generality, let us write
+$\typ = \typ_1 \to \hdots \typ_n \to \btyp$.
+Note that
+$\verif{\typ}{\subs{\utm}{\tenv}}
+ \tos \verif{\btyp}{(\subs{\utm}{\tenv}\,\gen{\typ_1}\hdots\gen{\typ_n})}
+ \tos \iunit$.
+Let $\var_1,\hdots,\var_n$ be fresh variables,
+and consider the term $\utm\,\var_1\hdots\var_n$
+and the type environment $\tenvtwo := (\tenv,\var_1:\typ_1,\hdots,\var_n:\typ_n)$.
+Note that $\subs{\utm}{\tenv} = \subs{\utm}{\tenvtwo}$ because $\var_1,\hdots,\var_n$
+are fresh.
+Then we have that
+$\verif{\btyp}{\subs{(\utm\,\var_1\hdots\var_n)}{\tenvtwo}}
+= \verif{\btyp}{(\subs{\utm}{\tenvtwo}\,\gen{\typ_1}\hdots\gen{\typ_n})}
+= \verif{\btyp}{(\subs{\utm}{\tenv}\,\gen{\typ_1}\hdots\gen{\typ_n})}
+\tos \iunit$.
+Let $\utmtwo^\downarrow$ be the normal form of $\utm^\downarrow\,\var_1\hdots\var_n$.
+Then by confluence (\cref{prop:confluence})
+we have that
+$\verif{\btyp}{\subs{(\utmtwo^\downarrow)}{\tenvtwo}} \tos \iunit$.
+Note that $\utmtwo^\downarrow$ is pure and
+that $\meas{\utm^\downarrow} \geq \meas{\utmtwo^\downarrow}$,
+since $\sizeVar{\utm^\downarrow} \geq \sizeVar{\utmtwo^\downarrow}$
+and $\size{\utm^\downarrow} \geq \size{\utmtwo^\downarrow}$
+hold by \cref{lemma:sizeVar_normalize}.
+
+Since $\utmtwo^\downarrow$ is a pure term in normal form, we consider two
+cases, depending on whether it starts with an abstraction or it is of the form
+$\var\,\utmtwo_1\hdots\utmtwo_m$:
+\begin{enumerate}
+\item
+  If $\utmtwo^\downarrow$ starts with an abstraction,
+  \ie $\utmtwo^\downarrow = \lam{\vartwo}{\utmthree}$,
+  then we have that
+  $\verifbtyp{\lam{\vartwo}{\subs{\utmthree}{\tenvtwo}}}
+  = \verifbtyp{\subs{(\lam{\vartwo}{\utmthree})}{\tenvtwo}}
+  = \verifbtyp{\subs{(\utmtwo^\downarrow)}{\tenvtwo}}
+  \tos \iunit$,
+  which is impossible,
+  because the reducts of an abstraction are always abstractions,
+  so in particular $\lam{\vartwo}{\subs{\utmthree}{\tenvtwo}}$
+  cannot have $\genbtyp$ as a reduct.
+\item
+  If $\utmtwo^\downarrow = \var\,\utmtwo_1\hdots\utmtwo_m$
+  then we have that
+  $\verifbtyp{(\subs{\var}{\tenvtwo}\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+  = \verifbtyp{\subs{(\var\,\utmtwo_1\hdots\utmtwo_m)}{\tenvtwo}}
+  = \verifbtyp{\subs{(\utmtwo^\downarrow)}{\tenvtwo}}
+  \tos \iunit$.
+  We claim that $\var\in\dom{\tenvtwo}$.
+  Indeed, if $\var\notin\dom{\tenvtwo}$, then $\subs{\var}{\tenvtwo} = \var$,
+  and we have that
+  $\verifbtyp{(\var\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+   \tos \iunit$,
+  which is impossible,
+  because the reducts of a term headed by a variable $\var$
+  are always headed by $\var$,
+  so in particular $\var\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo}$
+  cannot have $\genbtyp$ as a reduct.
+
+  Then $\var \in \dom{\tenvtwo}$. Suppose then that $\var:\typtwo\in\tenvtwo$.
+  Without loss of generality, $\typtwo$ is of the form
+  $\typtwo = \typtwo_1\to\hdots\to\typtwo_k\to\btyptwo$.
+  If $\var \notin \fv{\utm}$,
+  let us abbreviate $\lamt{\typ}{\utm} := \lam{\var}{(\eunit{\verif{\typ}{\var}}{\utm})}$.
+  Note that:
+  \[
+    \begin{array}{rlll}
+      \verifbtyp{((\lamt{\typtwo_1}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+    & = &
+      \verifbtyp{(\gen{\typtwo}\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+    \\
+    & = &
+      \verifbtyp{(\subs{\var}{\tenvtwo}\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+    \\
+    & \tos &
+      \iunit
+    \end{array}
+  \]
+  We first claim that $k = m$.
+  Let us discard the cases $k < m$ and $k > m$:
+  \begin{enumerate}
+  \item
+    If $k < m$, then we obtain a contradiction, because we claim that
+    $\verifbtyp{((\lamt{\typtwo_1}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}$
+    cannot reduce to $\iunit$.
+    To show this, we consider two cases:
+    \begin{enumerate}
+    \item
+      \label{thm:completeness:case_k_lt_m_stuck}
+      If for every index $1 \leq i \leq m$ we have that
+      $\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}} \tos \iunit$,
+      then:
+      \[
+        \verifbtyp{((\lamt{\typtwo_1}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+        \tos
+        \verifbtyp{(\gen{\btyptwo}\,\subs{\utmtwo_{k+1}}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+      \]
+      Note that the reducts of $\gen{\btyptwo}\,\subs{\utmtwo_{k+1}}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo}$
+      always have $\gen{\btyptwo}$ at the head and exactly $m - k > 0$ arguments,
+      so the argument of $\verifbtyp{\ARG}$ does not reduce to $\genbtyp$,
+      and the term does not reduce to $\iunit$.
+    \item
+      Otherwise, let $1 \leq i \leq m$ be the least index such that
+      $\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}}$ does not reduce to $\iunit$.
+      Then:
+      \[
+        \begin{array}{ll}
+        &
+        \verifbtyp{((\lamt{\typtwo_1}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+        \\
+        \tos &
+        \verifbtyp{((\eunit{\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}}}{(\lamt{\typtwo_{i+1}}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})})\,\subs{\utmtwo_{i+1}}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+        \end{array}
+      \]
+      Since $\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}}$ does not reduce to $\iunit$,
+      the unit eliminator
+      $(\eunit{\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}}}{\ARG})$
+      does not reduce to a redex,
+      so the argument of $\verifbtyp{\ARG}$ does not reduce to $\genbtyp$,
+      and the term does not reduce to $\iunit$.
+    \end{enumerate}
+  \item
+    If $k > m$, then we obtain a contradiction, because we claim that
+    $\verifbtyp{((\lamt{\typtwo_1}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}$
+    cannot reduce to $\iunit$.
+    To show this, note first that
+    if there is an index $1 \leq i \leq k$ such that
+    $\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}}$ does not reduce to $\iunit$,
+    the situation is similar as for \cref{thm:completeness:case_k_lt_m_stuck} above.
+    If for every index $1 \leq i \leq k$ we have that
+    $\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}} \tos \iunit$,
+    then:
+    \[
+      \verifbtyp{((\lamt{\typtwo_1}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+      \tos
+      \verifbtyp{(\lamt{\typtwo_{m+1}}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})}
+    \]
+    Note that the reducts of $\lamt{\typtwo_{m+1}}{\ARG}$ always start with an abstraction,
+    so the argument of $\verifbtyp{\ARG}$ does not reduce to $\genbtyp$,
+    and the term does not reduce to $\iunit$.
+  \end{enumerate}
+  Hence $k = m$.
+  If there is an index $1 \leq i \leq k$ such that
+  $\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}}$ does not reduce to $\iunit$,
+  the situation is similar as for \cref{thm:completeness:case_k_lt_m_stuck} above.
+  Hence $\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}} \tos \iunit$
+  for every index $1 \leq i \leq k$, and we have that:
+  \[
+    \verifbtyp{((\lamt{\typtwo_1}{\hdots\lamt{\typtwo_k}{\gen{\btyptwo}}})\,\subs{\utmtwo_1}{\tenvtwo}\hdots\subs{\utmtwo_m}{\tenvtwo})}
+    \tos
+    \verifbtyp{\gen{\btyptwo}}
+  \]
+  so $\verifbtyp{\gen{\btyptwo}} \tos \iunit$,
+  which means that $\btyp = \btyptwo$.
+
+  Recall that $\utmtwo^\downarrow$ is a pure term in normal form,
+  and that $\utmtwo^\downarrow = \var\,\utmtwo_1\hdots\utmtwo_k$,
+  so $\utmtwo_1,\hdots,\utmtwo_k$ are also pure terms in normal form.
+  Note also that
+  $\meas{\utm^\downarrow}
+   \geq \meas{\utmtwo^\downarrow}
+   > \meas{\utmtwo_i}$ for all $1 \leq i \leq k$,
+  by resorting to \cref{lemma:sizeVar_neutral}.
+  Since, for each $1 \leq i \leq k$,
+  we know that $\verif{\typtwo_i}{\subs{\utmtwo_i}{\tenvtwo}} \tos \iunit$,
+  by \ih we obtain that
+  there exists a term $\tm_i$ such that
+  $\judg{\tenvtwo}{\tm_i}{\typtwo_i}$.
+  Since $\var:\typtwo_1\to\hdots\to\typtwo_k\to\btyp \in \tenv \subseteq \tenvtwo$,
+  we can derive the judgment
+  $\judg{\tenvtwo}{\var\,\tm_1\hdots\tm_k}{\btyp}$.
+  Moreover, recall that $\tenvtwo = (\tenv,\var_1:\typ_1,\hdots,\var_n:\typ_n)$,
+  so taking $\tm := \var\,\tm_1\hdots\tm_n$
+  we have that
+  $\judg{\tenv}{\lam{\var_1}{\hdots\lam{\var_n}{\var\,\tm_1\hdots\tm_k}}}{\typ_1\to\hdots\typ_n\to\btyp}$,
+  as required.
+\end{enumerate}
+\end{proof}
+
